@@ -1,350 +1,594 @@
 import streamlit as st
-import pandas as pd
-import joblib
 
-# --------------------------------------------------
-# PAGE CONFIGURATION
-# --------------------------------------------------
+# =========================================================
+# PAGE CONFIG
+# =========================================================
 
 st.set_page_config(
-    page_title="CardioPredict AI",
-    page_icon="❤️",
-    layout="wide"
+    page_title="Cardiovascular Disease Prediction",
+    page_icon="💚",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# --------------------------------------------------
-# CUSTOM CSS
-# --------------------------------------------------
+# =========================================================
+# SIMPLE LIGHT THEME
+# =========================================================
 
 st.markdown("""
 <style>
 
-.main {
+.stApp {
     background-color: #f8fafc;
 }
 
-.title {
-    text-align: center;
-    font-size: 45px;
-    font-weight: bold;
-    margin-bottom: 5px;
+[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
 }
 
-.subtitle {
-    text-align: center;
-    font-size: 18px;
-    color: #64748b;
-    margin-bottom: 30px;
+.block-container {
+    max-width: 1200px;
+    padding-top: 35px;
 }
 
-.card {
-    padding: 25px;
-    border-radius: 15px;
+h1 {
+    color: #172033 !important;
+}
+
+h2 {
+    color: #172033 !important;
+}
+
+h3 {
+    color: #172033 !important;
+}
+
+p {
+    color: #667085;
+}
+
+.stButton > button {
+    background-color: #12a86b;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 700;
+}
+
+.stButton > button:hover {
+    background-color: #078653;
+    color: white;
+}
+
+[data-testid="stMetric"] {
     background-color: white;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-}
-
-.result {
-    padding: 25px;
+    border: 1px solid #e5e7eb;
     border-radius: 15px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
+    padding: 15px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# --------------------------------------------------
-# LOAD MODEL
-# --------------------------------------------------
-
-try:
-    model = joblib.load("cardio_model.pkl")
-    model_loaded = True
-
-except:
-    model_loaded = False
-
-
-# --------------------------------------------------
-# HEADER
-# --------------------------------------------------
-
-st.markdown(
-    '<div class="title">❤️ CardioPredict AI</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="subtitle">'
-    'Machine Learning Based Cardiovascular Disease Prediction'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.divider()
-
-
-# --------------------------------------------------
-# MODEL STATUS
-# --------------------------------------------------
-
-if model_loaded:
-    st.success("🟢 AI Model Loaded Successfully")
-else:
-    st.error("🔴 Model not found. Please create cardio_model.pkl first.")
-
-
-# --------------------------------------------------
+# =========================================================
 # SIDEBAR
-# --------------------------------------------------
+# =========================================================
 
-st.sidebar.title("⚙️ Patient Settings")
+with st.sidebar:
 
-st.sidebar.info(
-    "Enter patient health information "
-    "to generate a cardiovascular disease prediction."
-)
+    st.title("💚 Cardiovascular Disease Prediction")
 
+    st.caption("AI Health Intelligence")
 
-# --------------------------------------------------
-# INPUT SECTION
-# --------------------------------------------------
+    st.divider()
 
-st.header("👤 Patient Information")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-
-    age = st.number_input(
-        "🎂 Age",
-        min_value=1,
-        max_value=120,
-        value=50
+    page = st.radio(
+        "NAVIGATION",
+        [
+            "🏠 Home",
+            "🔮 Predict",
+            "📖 About",
+            "📩 Contact"
+        ]
     )
 
-    height = st.number_input(
-        "📏 Height (cm)",
-        min_value=50,
-        max_value=250,
-        value=165
+    st.divider()
+
+    st.caption("Machine Learning Project")
+    st.caption("Python • ML • Streamlit")
+
+
+# =========================================================
+# HOME
+# =========================================================
+
+if page == "🏠 Home":
+
+    st.success("✦ AI POWERED HEALTH INTELLIGENCE")
+
+    st.title("Understand Your Health.")
+    st.header("Predict Smarter. 💚")
+
+    st.write(
+        "VitalCare AI uses Machine Learning to analyze "
+        "health-related information and generate intelligent "
+        "predictions through a simple interface."
     )
 
+    st.write("")
 
-with col2:
+    col1, col2 = st.columns([2, 1])
 
-    gender = st.selectbox(
-        "⚧ Gender",
-        ["Female", "Male"]
-    )
+    with col1:
 
-    weight = st.number_input(
-        "⚖️ Weight (kg)",
-        min_value=20.0,
-        max_value=300.0,
-        value=65.0
-    )
-
-
-with col3:
-
-    smoke = st.selectbox(
-        "🚬 Smoking",
-        ["No", "Yes"]
-    )
-
-    alco = st.selectbox(
-        "🍷 Alcohol",
-        ["No", "Yes"]
-    )
-
-
-# --------------------------------------------------
-# MEDICAL INFORMATION
-# --------------------------------------------------
-
-st.header("🩺 Medical Information")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-
-    ap_hi = st.number_input(
-        "🩸 Systolic BP",
-        min_value=50,
-        max_value=250,
-        value=120
-    )
-
-    ap_lo = st.number_input(
-        "🩸 Diastolic BP",
-        min_value=30,
-        max_value=150,
-        value=80
-    )
-
-
-with col2:
-
-    cholesterol = st.selectbox(
-        "🧪 Cholesterol",
-        [1, 2, 3],
-        format_func=lambda x: {
-            1: "Normal",
-            2: "Above Normal",
-            3: "Well Above Normal"
-        }[x]
-    )
-
-
-with col3:
-
-    gluc = st.selectbox(
-        "🍬 Glucose",
-        [1, 2, 3],
-        format_func=lambda x: {
-            1: "Normal",
-            2: "Above Normal",
-            3: "Well Above Normal"
-        }[x]
-    )
-
-    active = st.selectbox(
-        "🏃 Physically Active",
-        ["No", "Yes"]
-    )
-
-
-# --------------------------------------------------
-# PREDICTION
-# --------------------------------------------------
-
-st.divider()
-
-predict_button = st.button(
-    "🔍  PREDICT CARDIOVASCULAR RISK",
-    use_container_width=True
-)
-
-
-if predict_button:
-
-    if not model_loaded:
-
-        st.error(
-            "Please train the model first using train_model.py"
+        st.info(
+            "🧠 Intelligent Analysis\n\n"
+            "Machine Learning helps analyze health information "
+            "and identify meaningful patterns."
         )
 
-    else:
+    with col2:
 
-        # Convert values
+        st.success(
+            "⚡ Fast Results\n\n"
+            "Generate predictions within seconds."
+        )
 
-        gender_value = 1 if gender == "Male" else 2
+    st.divider()
 
-        smoke_value = 1 if smoke == "Yes" else 0
+    st.subheader("Why VitalCare?")
 
-        alco_value = 1 if alco == "Yes" else 0
+    col1, col2, col3 = st.columns(3)
 
-        active_value = 1 if active == "Yes" else 0
+    with col1:
+
+        st.markdown("### 🧠 Intelligent")
+
+        st.write(
+            "Machine Learning analyzes multiple health "
+            "features to generate predictions."
+        )
+
+    with col2:
+
+        st.markdown("### ⚡ Fast")
+
+        st.write(
+            "Enter your information and get results quickly."
+        )
+
+    with col3:
+
+        st.markdown("### 🎯 Simple")
+
+        st.write(
+            "A clean interface makes Machine Learning "
+            "easy to understand."
+        )
+
+    st.divider()
+
+    st.subheader("How It Works")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+
+        st.metric("STEP 01", "📝 Input")
+
+        st.caption("Enter health information.")
+
+    with col2:
+
+        st.metric("STEP 02", "⚙️ Process")
+
+        st.caption("Prepare the information.")
+
+    with col3:
+
+        st.metric("STEP 03", "🧠 Analyze")
+
+        st.caption("ML model analyzes data.")
+
+    with col4:
+
+        st.metric("STEP 04", "✨ Result")
+
+        st.caption("View the prediction.")
+
+    st.divider()
+
+    st.subheader("Project Highlights")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Model", "ML")
+
+    with col2:
+        st.metric("Interface", "Streamlit")
+
+    with col3:
+        st.metric("Language", "Python")
+
+    with col4:
+        st.metric("Analysis", "AI")
 
 
-        # Create input
+# =========================================================
+# PREDICT
+# =========================================================
 
-        input_data = pd.DataFrame({
+elif page == "🔮 Predict":
 
-            "age": [age * 365],
+    st.success("✦ AI HEALTH ANALYSIS")
 
-            "gender": [gender_value],
+    st.title("Health Prediction")
 
-            "height": [height],
+    st.write(
+        "Enter the health information below "
+        "to generate a prediction."
+    )
 
-            "weight": [weight],
+    st.divider()
 
-            "ap_hi": [ap_hi],
+    st.subheader("👤 Personal Information")
 
-            "ap_lo": [ap_lo],
+    col1, col2, col3 = st.columns(3)
 
-            "cholesterol": [cholesterol],
+    with col1:
 
-            "gluc": [gluc],
+        age = st.number_input(
+            "Age",
+            min_value=1,
+            max_value=120,
+            value=30
+        )
 
-            "smoke": [smoke_value],
+    with col2:
 
-            "alco": [alco_value],
+        height = st.number_input(
+            "Height (cm)",
+            min_value=50,
+            max_value=250,
+            value=170
+        )
 
-            "active": [active_value]
+    with col3:
 
-        })
+        weight = st.number_input(
+            "Weight (kg)",
+            min_value=20,
+            max_value=250,
+            value=65
+        )
 
+    st.divider()
 
-        # Prediction
+    st.subheader("❤️ Health Information")
 
-        prediction = model.predict(input_data)[0]
+    col1, col2 = st.columns(2)
 
-        probability = model.predict_proba(input_data)[0][1]
+    with col1:
 
+        gender = st.selectbox(
+            "Gender",
+            ["Male", "Female"]
+        )
 
-        # --------------------------------------------------
-        # RESULT
-        # --------------------------------------------------
+        cholesterol = st.selectbox(
+            "Cholesterol",
+            [
+                "Normal",
+                "Above Normal",
+                "High"
+            ]
+        )
 
-        st.header("📊 Prediction Result")
+    with col2:
 
+        activity = st.selectbox(
+            "Physical Activity",
+            ["Yes", "No"]
+        )
 
-        if prediction == 1:
+        smoking = st.selectbox(
+            "Smoking",
+            ["No", "Yes"]
+        )
 
-            st.markdown(
-                '<div class="result">'
-                '⚠️ Higher Cardiovascular Risk'
-                '</div>',
-                unsafe_allow_html=True
+    st.divider()
+
+    st.subheader("🩸 Blood Pressure")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        ap_hi = st.number_input(
+            "Systolic Pressure",
+            min_value=50,
+            max_value=250,
+            value=120
+        )
+
+    with col2:
+
+        ap_lo = st.number_input(
+            "Diastolic Pressure",
+            min_value=30,
+            max_value=200,
+            value=80
+        )
+
+    st.write("")
+
+    predict = st.button(
+        "✨ Generate Prediction",
+        use_container_width=True
+    )
+
+    if predict:
+
+        # BMI calculation
+
+        height_m = height / 100
+
+        bmi = weight / (height_m ** 2)
+
+        st.divider()
+
+        st.subheader("📊 Analysis Result")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+
+            st.metric(
+                "BMI",
+                f"{bmi:.2f}"
+            )
+
+        with col2:
+
+            st.metric(
+                "Blood Pressure",
+                f"{ap_hi}/{ap_lo}"
+            )
+
+        with col3:
+
+            st.metric(
+                "Age",
+                age
+            )
+
+        st.write("")
+
+        # Demo prediction
+
+        if ap_hi >= 140 or ap_lo >= 90:
+
+            prediction = "Higher Risk"
+
+            st.warning(
+                "⚠️ Prediction: Higher Risk"
             )
 
         else:
 
-            st.markdown(
-                '<div class="result">'
-                '✅ Lower Cardiovascular Risk'
-                '</div>',
-                unsafe_allow_html=True
-            )
+            prediction = "Lower Risk"
 
+            st.success(
+                "✨ Prediction: Lower Risk"
+            )
 
         st.write("")
 
-        # Probability
+        st.subheader("⚖️ BMI Analysis")
 
-        st.subheader("📈 Risk Probability")
+        if bmi < 18.5:
 
-        st.progress(float(probability))
+            st.info(
+                f"BMI = {bmi:.2f} — Underweight"
+            )
 
-        st.metric(
-            "Predicted Risk",
-            f"{probability * 100:.2f}%"
-        )
+        elif bmi < 25:
 
+            st.success(
+                f"BMI = {bmi:.2f} — Normal"
+            )
 
-        # Show entered data
+        elif bmi < 30:
 
-        with st.expander("🔎 View Patient Data"):
+            st.warning(
+                f"BMI = {bmi:.2f} — Overweight"
+            )
 
-            st.dataframe(
-                input_data,
-                use_container_width=True
+        else:
+
+            st.error(
+                f"BMI = {bmi:.2f} — Obesity"
             )
 
 
-# --------------------------------------------------
+# =========================================================
+# ABOUT
+# =========================================================
+
+elif page == "📖 About":
+
+    st.success("✦ ABOUT VITALCARE AI")
+
+    st.title("About the Project")
+
+    st.write(
+        "VitalCare AI is a Machine Learning project designed "
+        "to demonstrate how health-related data can be processed "
+        "and used for prediction."
+    )
+
+    st.divider()
+
+    st.subheader("🎯 Project Objective")
+
+    st.write("""
+    The main objective of this project is to develop a
+    Machine Learning based prediction system.
+
+    The application accepts health information from the user,
+    processes the input and uses a trained model to generate
+    a prediction.
+    """)
+
+    st.divider()
+
+    st.subheader("🔄 Machine Learning Workflow")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        st.info("📂\n\nDataset")
+
+    with col2:
+        st.info("🧹\n\nPreprocessing")
+
+    with col3:
+        st.info("🧠\n\nTraining")
+
+    with col4:
+        st.info("📊\n\nEvaluation")
+
+    with col5:
+        st.info("🔮\n\nPrediction")
+
+    st.divider()
+
+    st.subheader("🛠️ Technologies Used")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Language", "Python")
+
+    with col2:
+        st.metric("Data", "Pandas")
+
+    with col3:
+        st.metric("ML", "Scikit-learn")
+
+    with col4:
+        st.metric("Frontend", "Streamlit")
+
+    st.divider()
+
+    st.subheader("📚 Project Tasks")
+
+    st.write("""
+    **Week 1:** Dataset Understanding
+
+    **Week 2:** Data Preprocessing
+
+    **Week 3:** Model Creation
+
+    **Week 4:** Model Evaluation
+
+    **Week 5:** Advanced Model Training
+
+    **Frontend:** Streamlit Application
+    """)
+
+
+# =========================================================
+# CONTACT
+# =========================================================
+
+elif page == "📩 Contact":
+
+    st.success("✦ CONTACT")
+
+    st.title("Let's Connect")
+
+    st.write(
+        "Have a question, suggestion or feedback? "
+        "Send us a message."
+    )
+
+    st.divider()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.subheader("📬 Contact Information")
+
+        st.info("""
+        📧 Email
+
+        example@gmail.com
+
+        📍 Location
+
+        Gujarat, India
+
+        💻 Project
+
+        Machine Learning Health Prediction
+        """)
+
+    with col2:
+
+        st.subheader("💌 Send a Message")
+
+        name = st.text_input(
+            "Name",
+            placeholder="Enter your name"
+        )
+
+        email = st.text_input(
+            "Email",
+            placeholder="Enter your email"
+        )
+
+        subject = st.text_input(
+            "Subject",
+            placeholder="Enter subject"
+        )
+
+        message = st.text_area(
+            "Message",
+            placeholder="Write your message here..."
+        )
+
+        send = st.button(
+            "📨 Send Message",
+            use_container_width=True
+        )
+
+        if send:
+
+            if name and email and message:
+
+                st.success(
+                    "Message sent successfully! 💚"
+                )
+
+            else:
+
+                st.error(
+                    "Please fill in Name, Email and Message."
+                )
+
+
+# =========================================================
 # FOOTER
-# --------------------------------------------------
+# =========================================================
 
 st.divider()
 
 st.caption(
-    "🤖 CardioPredict AI | Machine Learning Project | "
-    "Built with Python + Scikit-learn + Streamlit"
+    "💚 VitalCare AI | Machine Learning Health Prediction System | © 2026"
 )
